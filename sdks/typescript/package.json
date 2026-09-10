@@ -1,6 +1,6 @@
 {
   "name": "@azaini/t212-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Unofficial, fully typed TypeScript SDK for the Trading 212 Public API",
   "keywords": ["trading212", "trading 212", "t212", "trading", "stocks", "sdk", "api"],
   "license": "MIT",
