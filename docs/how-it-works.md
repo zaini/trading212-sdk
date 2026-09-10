@@ -16,23 +16,8 @@ fern/generators.yml       generator versions, auth, output paths
 ```
 
 Everything runs locally with the Apache-2.0 [Fern](https://github.com/fern-api/fern) generators.
-No Fern account, token or paid plan is used.
-
-## Regenerating
-
-Requires Docker, Node 18+ and Python 3 with PyYAML.
-
-```sh
-scripts/generate.sh              # both SDKs
-scripts/generate.sh typescript   # just one
-```
-
-CI regenerates on every push and fails if the committed code differs, so generated code and config never drift apart.
-
-To update the API spec, replace `openapi/api.yaml` (and `api.json`) with the latest from
-[docs.trading212.com](https://docs.trading212.com/api), run `scripts/generate.sh`, then run the tests.
-`tests/test_spec_coverage.py` fails if a new endpoint has no name in `fern/overrides.yml`, or if an
-override points at an endpoint that no longer exists.
+No Fern account, token or paid plan is used. Updating the spec, upgrading Fern and releasing are covered in
+[maintaining.md](maintaining.md).
 
 ## What we change, and why
 
@@ -106,38 +91,6 @@ Files listed in a `.fernignore` inside a generated folder survive regeneration
 Live tests skip when `T212_API_KEY` / `T212_API_SECRET` are unset. They only ever use the demo server,
 never place orders, and space out requests to respect Trading 212's per-endpoint rate limits. The Python
 live suite also warns when the API returns fields the spec doesn't document (spec drift).
-
-## CI secrets
-
-Live tests run in GitHub Actions from the `demo` environment's encrypted secrets. To set them up:
-
-1. On Trading 212 (**demo** account), create an API key with **read-only** permissions. The live tests
-   never trade, so a key that can't trade limits the damage if it ever leaks.
-2. Create the environment and secrets. `gh secret set` prompts for the value, so it never lands in your
-   shell history:
-   ```sh
-   gh api -X PUT repos/<owner>/<repo>/environments/demo
-   gh secret set T212_API_KEY --env demo
-   gh secret set T212_API_SECRET --env demo
-   ```
-3. Optional: in *Settings → Environments → demo*, restrict deployment branches to `main`.
-
-GitHub encrypts secrets at rest, masks them in logs, and does not expose them to workflows triggered by
-pull requests from forks. The live workflow runs on pushes to `main`, weekly, and on demand.
-
-For local runs, put the values in a `.env` file (git-ignored) or export them in your shell.
-
-## Releasing
-
-`.github/workflows/release.yml` publishes both packages when a `v*` tag is pushed. It uses trusted
-publishing, so npm and PyPI verify the workflow itself and no long-lived registry tokens are stored.
-
-1. Bump `version` in `sdks/typescript/package.json` and `sdks/python/pyproject.toml` (they must match).
-2. Commit, then `git tag v0.2.0 && git push origin v0.2.0`.
-
-The `npm` and `pypi` GitHub environments only accept `v*` tags. The very first npm publish needs an
-`NPM_TOKEN` secret, because npm can't set up trusted publishing until the package exists. After that,
-add the trusted publisher on npmjs.com and delete the secret.
 
 ## Adding another language
 
