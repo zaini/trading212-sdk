@@ -8,6 +8,9 @@ servers:
   - url: https://live.trading212.com
     x-fern-server-name: Live
 
+# POST endpoints (placing orders, requesting exports, writing pies) are not
+# idempotent, so automatic retries are disabled for them: a request that timed
+# out may still have been executed, and retrying could place a duplicate order.
 paths:
   /api/v0/equity/account/summary:
     get:
@@ -38,18 +41,22 @@ paths:
     post:
       x-fern-sdk-group-name: orders
       x-fern-sdk-method-name: placeMarket
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
   /api/v0/equity/orders/limit:
     post:
       x-fern-sdk-group-name: orders
       x-fern-sdk-method-name: placeLimit
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
   /api/v0/equity/orders/stop:
     post:
       x-fern-sdk-group-name: orders
       x-fern-sdk-method-name: placeStop
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
   /api/v0/equity/orders/stop_limit:
     post:
       x-fern-sdk-group-name: orders
       x-fern-sdk-method-name: placeStopLimit
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
 
   /api/v0/equity/positions:
     get:
@@ -84,6 +91,7 @@ paths:
     post:
       x-fern-sdk-group-name: history
       x-fern-sdk-method-name: requestReport
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
 
   /api/v0/equity/pies:
     get:
@@ -93,6 +101,7 @@ paths:
     post:
       x-fern-sdk-group-name: pies
       x-fern-sdk-method-name: create
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
       x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
   /api/v0/equity/pies/{id}:
     get:
@@ -102,6 +111,7 @@ paths:
     post:
       x-fern-sdk-group-name: pies
       x-fern-sdk-method-name: update
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
       x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
     delete:
       x-fern-sdk-group-name: pies
@@ -111,4 +121,5 @@ paths:
     post:
       x-fern-sdk-group-name: pies
       x-fern-sdk-method-name: duplicate
+      x-fern-retries: { disabled: true } # not idempotent: a retry could duplicate it
       x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }

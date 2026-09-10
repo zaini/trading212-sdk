@@ -20,7 +20,8 @@ client = Trading212Client(
 
 summary = client.account.get_summary()
 positions = client.positions.list()
-client.orders.place_market(ticker="AAPL_US_EQ", quantity=1)
+client.orders.place_market(ticker="AAPL_US_EQ", quantity=1)  # buy
+client.orders.place_market(ticker="AAPL_US_EQ", quantity=-1)  # sell: negative quantity
 ```
 
 An `AsyncTrading212Client` with the same methods is also available.
@@ -44,4 +45,5 @@ For the async client use `apaginate` (`async for order in apaginate(...)`).
 `client.pies.*` still works, but Trading 212 no longer supports or updates the Pies API.
 Calling these methods emits a `DeprecationWarning`.
 
+Read the [API gotchas](https://github.com/zaini/trading212-sdk/blob/main/docs/api-gotchas.md) before trading.
 See [docs/naming-map.md](https://github.com/zaini/trading212-sdk/blob/main/docs/naming-map.md) for every method.

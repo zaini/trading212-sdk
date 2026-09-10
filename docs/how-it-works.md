@@ -61,11 +61,21 @@ forgetting to set it can never place a real-money trade.
 History endpoints return `{ items, nextPagePath }`, where `nextPagePath` is a path plus query string
 (`/api/v0/equity/history/orders?limit=50&cursor=1760346100000`). `x-fern-pagination.next_path` maps this directly.
 
+Trading 212 has also returned other forms: a bare query string (`limit=5&cursor=...`), and
+`"null&ticker=..."` on the last page. Both SDKs handle all of these (see [api-gotchas.md](api-gotchas.md)).
+
 - **TypeScript:** methods return an async-iterable `Page`. Fern's generated code encoded the `?` in
-  `nextPagePath` as `%3F`, breaking every page after the first. `scripts/postprocess_typescript.py` fixes this.
+  `nextPagePath` as `%3F`, breaking every page after the first, and only recognised `null`/`""` as the end.
+  `scripts/postprocess_typescript.py` routes both through the hand-written `src/nextPage.ts`.
 - **Python:** when you generate locally, Fern only enables pagination for accounts with the paid
   pagination feature. We ship a hand-written `t212/pagination.py` (`paginate`, `apaginate`, and page
-  variants) that requests `nextPagePath`'s query string verbatim.
+  variants) that requests `nextPagePath`'s query string verbatim, and stops if the API ever repeats a page.
+
+### Retries
+
+The generated clients retry 408, 429 and 5xx with backoff, waiting for `x-ratelimit-reset` / `Retry-After`
+when present. Placing an order is not idempotent, though: a timed-out request may still have executed. So
+`x-fern-retries: { disabled: true }` turns retries off for every POST (orders, export requests, pie writes).
 
 ### Deprecated Pies endpoints
 
@@ -116,6 +126,18 @@ GitHub encrypts secrets at rest, masks them in logs, and does not expose them to
 pull requests from forks. The live workflow runs on pushes to `main`, weekly, and on demand.
 
 For local runs, put the values in a `.env` file (git-ignored) or export them in your shell.
+
+## Releasing
+
+`.github/workflows/release.yml` publishes both packages when a `v*` tag is pushed. It uses trusted
+publishing, so npm and PyPI verify the workflow itself and no long-lived registry tokens are stored.
+
+1. Bump `version` in `sdks/typescript/package.json` and `sdks/python/pyproject.toml` (they must match).
+2. Commit, then `git tag v0.2.0 && git push origin v0.2.0`.
+
+The `npm` and `pypi` GitHub environments only accept `v*` tags. The very first npm publish needs an
+`NPM_TOKEN` secret, because npm can't set up trusted publishing until the package exists. After that,
+add the trusted publisher on npmjs.com and delete the secret.
 
 ## Adding another language
 

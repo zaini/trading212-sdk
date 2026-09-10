@@ -165,6 +165,9 @@ class RawOrdersClient:
         HttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/limit",
             method="POST",
@@ -177,7 +180,7 @@ class RawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -310,6 +313,9 @@ class RawOrdersClient:
         HttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/market",
             method="POST",
@@ -321,7 +327,7 @@ class RawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -452,6 +458,9 @@ class RawOrdersClient:
         HttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/stop",
             method="POST",
@@ -464,7 +473,7 @@ class RawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -602,6 +611,9 @@ class RawOrdersClient:
         HttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/stop_limit",
             method="POST",
@@ -615,7 +627,7 @@ class RawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1040,6 +1052,9 @@ class AsyncRawOrdersClient:
         AsyncHttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/limit",
             method="POST",
@@ -1052,7 +1067,7 @@ class AsyncRawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1185,6 +1200,9 @@ class AsyncRawOrdersClient:
         AsyncHttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/market",
             method="POST",
@@ -1196,7 +1214,7 @@ class AsyncRawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1327,6 +1345,9 @@ class AsyncRawOrdersClient:
         AsyncHttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/stop",
             method="POST",
@@ -1339,7 +1360,7 @@ class AsyncRawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1477,6 +1498,9 @@ class AsyncRawOrdersClient:
         AsyncHttpResponse[Order]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             "api/v0/equity/orders/stop_limit",
             method="POST",
@@ -1490,7 +1514,7 @@ class AsyncRawOrdersClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:

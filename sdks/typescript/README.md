@@ -21,7 +21,8 @@ const client = new Trading212Client({
 
 const summary = await client.account.getSummary();
 const positions = await client.positions.list();
-await client.orders.placeMarket({ ticker: "AAPL_US_EQ", quantity: 1 });
+await client.orders.placeMarket({ ticker: "AAPL_US_EQ", quantity: 1 }); // buy
+await client.orders.placeMarket({ ticker: "AAPL_US_EQ", quantity: -1 }); // sell: negative quantity
 ```
 
 ### Pagination
@@ -44,7 +45,9 @@ These methods are marked `@deprecated`.
 ### Errors, retries and timeouts
 
 Non-2xx responses throw typed errors (`Trading212.UnauthorizedError`, `Trading212.TooManyRequestsError`, ...),
-all extending `Trading212Error`. Requests are retried up to twice with backoff on 408, 429 and 5xx.
+all extending `Trading212Error`. Reads are retried up to twice with backoff on 408, 429 and 5xx. Order placement and other POSTs are never
+retried automatically, since a timed-out order may still have executed.
 Per-request options: `{ timeoutInSeconds, maxRetries, abortSignal }`.
 
+Read the [API gotchas](https://github.com/zaini/trading212-sdk/blob/main/docs/api-gotchas.md) before trading.
 See [docs/naming-map.md](https://github.com/zaini/trading212-sdk/blob/main/docs/naming-map.md) for every method.

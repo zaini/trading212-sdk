@@ -104,8 +104,10 @@ def test_typescript_pagination(op):
     signature = re.search(rf"public async {op.sdk_method}\(.*?\): (Promise<[^\n]*)", source, re.S)
     assert signature and "core.Page<" in signature.group(1)
     assert "response?.nextPagePath" in source
-    # scripts/postprocess_typescript.py: Fern's url.join encodes the `?` in nextPagePath.
+    # scripts/postprocess_typescript.py routes pagination through src/nextPage.ts
+    # (Fern's url.join encodes the `?` in nextPagePath).
     assert "core.url.join(_baseUrl, response?.nextPagePath" not in source
+    assert f'resolveNextPageUrl(_baseUrl, response!.nextPagePath!, "{op.path}")' in source
 
 
 def test_typescript_auth_and_environments():
@@ -119,6 +121,19 @@ def test_typescript_auth_and_environments():
     assert 'Live: "https://live.trading212.com"' in envs
 
 
+@pytest.mark.parametrize("op", OPS, ids=op_id)
+def test_typescript_retries_disabled_for_non_idempotent_posts(op):
+    source = ts_client(op.group)
+    body = re.search(rf"(?:private async __{op.sdk_method}|public async {op.sdk_method})\(.*?maxRetries: ([^,]+),", source, re.S)
+    assert body, f"__{op.sdk_method} not found"
+    assert (body.group(1) == "0") == (op.method == "post")
+
+
+def test_typescript_hand_written_files_survive_regeneration():
+    assert "nextPage.ts" in (TS_SRC / ".fernignore").read_text().split()
+    assert (TS_SRC / "nextPage.ts").exists()
+
+
 # --- generated Python -------------------------------------------------------------
 
 
@@ -127,6 +142,13 @@ def test_typescript_auth_and_environments():
 def test_python_method_exists(op, is_async):
     body = py_method_body(py_client(op.group), snake_case(op.sdk_method), is_async)
     assert ("DeprecationWarning" in body) == op.deprecated
+
+
+@pytest.mark.parametrize("op", OPS, ids=op_id)
+def test_python_retries_disabled_for_non_idempotent_posts(op):
+    raw = (PY_SRC / op.group / "raw_client.py").read_text()
+    body = py_method_body(raw, snake_case(op.sdk_method), is_async=False)
+    assert ('"max_retries": 0' in body) == (op.method == "post")
 
 
 def test_python_auth_and_environments():

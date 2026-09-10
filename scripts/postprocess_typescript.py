@@ -1,24 +1,34 @@
 """Post-generation patches for the TypeScript SDK.
 
-Fern's `next_path` pagination builds the next page URL with
-`core.url.join(baseUrl, nextPagePath)`, which assigns the whole value to
-`URL.pathname`. Trading 212's `nextPagePath` includes a query string
-(`/api/v0/equity/history/orders?limit=2&cursor=123`), so the `?` gets encoded
-as `%3F` and every page after the first requests the wrong URL.
+Fern's `next_path` pagination has two problems with Trading 212's `nextPagePath`:
 
-This swaps it for standard URL resolution, which keeps the query string intact.
-Remove once fixed upstream in fern-api/fern.
+1. It builds the next URL with `core.url.join(baseUrl, nextPagePath)`, which puts
+   the whole value into `URL.pathname`, so the `?` is encoded as `%3F` and every
+   page after the first requests the wrong URL.
+2. It only treats null/"" as the last page, but Trading 212 has also returned a
+   bare query string (`limit=5&cursor=...`) and `"null&ticker=..."`.
+
+Both are routed through the hand-written src/nextPage.ts instead.
 """
 
 from __future__ import annotations
 
+import re
 import sys
 
 from overrides import ROOT, operations
 
 RESOURCES = ROOT / "sdks" / "typescript" / "src" / "api" / "resources"
-BROKEN = "list(core.url.join(_baseUrl, response?.nextPagePath!))"
-FIXED = "list(new URL(response?.nextPagePath!, _baseUrl).toString())"
+IMPORT = 'import { hasNextPage, resolveNextPageUrl } from "../../../../nextPage.js";\n'
+
+PAGE_BLOCK = re.compile(
+    r'(?P<head>"GET",\s*"(?P<path>/api/[^"]+)",\s*\);\s*\},\s*\);\s*'
+    r"const dataWithRawResponse = await initialRequest\(\)\.withRawResponse\(\);.*?)"
+    r'hasNextPage: \(response\) => response\?\.nextPagePath != null && response\?\.nextPagePath !== "",'
+    r"(?P<mid>.*?)"
+    r"return list\(core\.url\.join\(_baseUrl, response\?\.nextPagePath!\)\);",
+    re.S,
+)
 
 
 def main() -> None:
@@ -31,14 +41,22 @@ def main() -> None:
     for group, count in expected.items():
         path = RESOURCES / group / "client" / "Client.ts"
         source = path.read_text()
-        found = source.count(BROKEN)
-        if found == 0 and source.count(FIXED) == count:
+        if IMPORT in source:
             continue  # already patched
+        source, found = PAGE_BLOCK.subn(
+            lambda m: (
+                f"{m['head']}hasNextPage: (response) => hasNextPage(response?.nextPagePath),{m['mid']}"
+                f'return list(resolveNextPageUrl(_baseUrl, response!.nextPagePath!, "{m["path"]}"));'
+            ),
+            source,
+        )
         if found != count:
-            sys.exit(f"{path}: expected {count} occurrences of the next-page URL join, found {found}")
-        path.write_text(source.replace(BROKEN, FIXED))
+            sys.exit(f"{path}: expected {count} paginated methods to patch, found {found}")
+        first_import = source.index("import ")
+        path.write_text(source[:first_import] + IMPORT + source[first_import:])
         total += found
-    print(f"postprocess_typescript: patched {total} next-page URLs")
+
+    print(f"postprocess_typescript: patched {total} paginated methods")
 
 
 if __name__ == "__main__":

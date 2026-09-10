@@ -41,7 +41,7 @@ run locally. When the API changes, we update the spec and regenerate.
 - `Demo` / `Live` environments, with demo as the default
 - Auto-pagination over history endpoints
 - Deprecated Pies endpoints still available, marked as deprecated
-- Typed errors, retries with backoff (honouring `Retry-After`), timeouts
+- Typed errors, timeouts, and retries with backoff for reads (order placement is never retried)
 - Sync and async Python clients; zero-dependency TypeScript client (ESM + CJS)
 
 ## Repository layout
@@ -66,5 +66,7 @@ uv run --project sdks/python pytest tests                  # spec coverage check
 ```
 
 Live tests against a demo account run when `T212_API_KEY` / `T212_API_SECRET` are set.
+**Before trading, read [docs/api-gotchas.md](docs/api-gotchas.md)** — e.g. you sell by sending a negative quantity.
+
 [docs/how-it-works.md](docs/how-it-works.md) explains every change we make to the spec, the
 post-generation patches, CI secrets, and how to generate SDKs for other languages.

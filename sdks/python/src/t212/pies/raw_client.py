@@ -155,6 +155,9 @@ class RawPiesClient:
         HttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             "api/v0/equity/pies",
             method="POST",
@@ -166,7 +169,7 @@ class RawPiesClient:
                 "instrumentShares": instrument_shares,
                 "name": name,
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -373,6 +376,9 @@ class RawPiesClient:
         HttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             f"api/v0/equity/pies/{encode_path_param(id)}",
             method="POST",
@@ -387,7 +393,7 @@ class RawPiesClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -582,6 +588,9 @@ class RawPiesClient:
         HttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = self._client_wrapper.httpx_client.request(
             f"api/v0/equity/pies/{encode_path_param(id)}/duplicate",
             method="POST",
@@ -592,7 +601,7 @@ class RawPiesClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -799,6 +808,9 @@ class AsyncRawPiesClient:
         AsyncHttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             "api/v0/equity/pies",
             method="POST",
@@ -810,7 +822,7 @@ class AsyncRawPiesClient:
                 "instrumentShares": instrument_shares,
                 "name": name,
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1017,6 +1029,9 @@ class AsyncRawPiesClient:
         AsyncHttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             f"api/v0/equity/pies/{encode_path_param(id)}",
             method="POST",
@@ -1031,7 +1046,7 @@ class AsyncRawPiesClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:
@@ -1228,6 +1243,9 @@ class AsyncRawPiesClient:
         AsyncHttpResponse[AccountBucketInstrumentsDetailedResponse]
             OK
         """
+        _request_options_with_retries_disabled: typing.Optional[RequestOptions] = (
+            {**request_options, "max_retries": 0} if request_options is not None else {"max_retries": 0}
+        )
         _response = await self._client_wrapper.httpx_client.request(
             f"api/v0/equity/pies/{encode_path_param(id)}/duplicate",
             method="POST",
@@ -1238,7 +1256,7 @@ class AsyncRawPiesClient:
             headers={
                 "content-type": "application/json",
             },
-            request_options=request_options,
+            request_options=_request_options_with_retries_disabled,
             omit=OMIT,
         )
         try:

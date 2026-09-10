@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { Trading212Client, Trading212Environment } from "../src/index.js";
+import { hasNextPage } from "../src/nextPage.js";
 
 const DEMO = "https://demo.trading212.com";
 const LIVE = "https://live.trading212.com";
@@ -82,4 +83,56 @@ describe("pagination", () => {
 
         expect(calls[1].url).toBe(`${DEMO}${next}`);
     });
+});
+
+describe("nextPagePath edge cases", () => {
+    it.each([
+        [null, false],
+        ["", false],
+        ["null", false],
+        ["null&ticker=AAPL_US_EQ", false],
+        ["/api/v0/equity/history/orders?limit=2&cursor=null", false],
+        ["/api/v0/equity/history/orders?limit=2&cursor=5", true],
+        ["limit=5&cursor=abc&time=2025-01-01T00:00:00Z", true],
+    ])("hasNextPage(%j) is %s", (nextPagePath, expected) => {
+        expect(hasNextPage(nextPagePath)).toBe(expected);
+    });
+
+    it("follows a query-string-only nextPagePath on the same endpoint", async () => {
+        const { fetch, calls } = mockFetch(
+            { items: [], nextPagePath: "limit=5&cursor=abc" },
+            { items: [], nextPagePath: "null&limit=5" },
+        );
+        const client = new Trading212Client({ apiKey: "k", apiSecret: "s", fetch });
+        const page = await client.history.listTransactions({ limit: 5 });
+        const next = await page.getNextPage();
+        expect(calls[1].url).toBe(`${DEMO}/api/v0/equity/history/transactions?limit=5&cursor=abc`);
+        expect(next.hasNextPage()).toBe(false);
+    });
+});
+
+describe("retries", () => {
+    function failingFetch(status: number) {
+        const fetch = vi.fn(async () => new Response("{}", { status, headers: { "content-type": "application/json" } }));
+        return fetch;
+    }
+
+    it("never retries order placement (not idempotent)", async () => {
+        const fetch = failingFetch(503);
+        const client = new Trading212Client({ apiKey: "k", apiSecret: "s", fetch: fetch as unknown as typeof globalThis.fetch });
+        await expect(client.orders.placeMarket({ ticker: "AAPL_US_EQ", quantity: 1 })).rejects.toThrow();
+        expect(fetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("retries reads", async () => {
+        const fetch = failingFetch(503);
+        const client = new Trading212Client({
+            apiKey: "k",
+            apiSecret: "s",
+            maxRetries: 1,
+            fetch: fetch as unknown as typeof globalThis.fetch,
+        });
+        await expect(client.positions.list()).rejects.toThrow();
+        expect(fetch).toHaveBeenCalledTimes(2);
+    }, 10_000);
 });

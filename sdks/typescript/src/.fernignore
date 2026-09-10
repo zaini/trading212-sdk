@@ -1,0 +1,2 @@
+# Hand-written files that Fern must not overwrite on regeneration.
+nextPage.ts

@@ -130,3 +130,59 @@ def test_non_deprecated_methods_do_not_warn(client, recwarn):
     respx.get(f"{DEMO}/api/v0/equity/positions").respond(json=[])
     client.positions.list()
     assert not [w for w in recwarn if issubclass(w.category, DeprecationWarning)]
+
+
+@pytest.mark.parametrize(
+    "next_path, expected",
+    [
+        (None, False),
+        ("", False),
+        ("null", False),
+        ("null&ticker=AAPL_US_EQ", False),
+        ("/api/v0/equity/history/orders?limit=2&cursor=null", False),
+        ("/api/v0/equity/history/orders?limit=2&cursor=5", True),
+        ("limit=5&cursor=abc&time=2025-01-01T00:00:00Z", True),
+    ],
+)
+def test_has_next_page(next_path, expected):
+    from t212.pagination import has_next_page
+
+    assert has_next_page(next_path) is expected
+
+
+@respx.mock
+def test_paginate_handles_query_only_next_page_path(client):
+    route = respx.get(f"{DEMO}/api/v0/equity/history/transactions").mock(
+        side_effect=[
+            httpx.Response(200, json={"items": [], "nextPagePath": "limit=5&cursor=abc&time=2025-01-01T00:00:00Z"}),
+            httpx.Response(200, json={"items": [], "nextPagePath": "null&limit=5"}),
+        ]
+    )
+    assert len(list(paginate_pages(client.history.list_transactions, limit=5))) == 2
+    assert dict(route.calls[1].request.url.params) == {"limit": "5", "cursor": "abc", "time": "2025-01-01T00:00:00Z"}
+
+
+@respx.mock
+def test_paginate_stops_if_the_same_page_repeats(client):
+    same = order_page([1], "/api/v0/equity/history/orders?cursor=1")
+    respx.get(f"{DEMO}/api/v0/equity/history/orders").mock(return_value=httpx.Response(200, json=same))
+    with pytest.warns(UserWarning, match="same next page twice"):
+        pages = list(paginate_pages(client.history.list_orders))
+    assert len(pages) == 2
+
+
+@respx.mock
+def test_order_placement_is_not_retried(client):
+    route = respx.post(f"{DEMO}/api/v0/equity/orders/market").respond(503)
+    with pytest.raises(Exception):
+        client.orders.place_market(ticker="AAPL_US_EQ", quantity=1)
+    assert route.call_count == 1
+
+
+@respx.mock
+def test_reads_are_retried(client):
+    route = respx.get(f"{DEMO}/api/v0/equity/positions").mock(
+        side_effect=[httpx.Response(503), httpx.Response(200, json=[])]
+    )
+    client.positions.list()
+    assert route.call_count == 2
