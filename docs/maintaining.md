@@ -54,7 +54,7 @@ Both packages are released together, with the same version number:
 
 | Registry | Package | Published from |
 | --- | --- | --- |
-| npm | `t212` | `sdks/typescript` |
+| npm | `@zaini/t212-sdk` | `sdks/typescript` |
 | PyPI | `t212-sdk` (imports as `t212`) | `sdks/python` |
 
 1. Pick the version, following [semver](https://semver.org). While we're on 0.x, a breaking change (renamed

@@ -6,7 +6,7 @@ Thanks for helping. Bug reports, API quirks, spec updates, helpers, and docs fix
 
 [Open an issue](https://github.com/zaini/trading212-sdk/issues) with:
 
-- the SDK (`t212` on npm or `t212-sdk` on PyPI) and its version
+- the SDK (`@zaini/t212-sdk` on npm or `t212-sdk` on PyPI) and its version
 - the call you made, and what you expected
 - the response or error, with your API key and secret removed
 - whether it happened on `Demo` or `Live`

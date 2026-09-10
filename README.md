@@ -5,7 +5,7 @@ generated from Trading 212's official OpenAPI spec.
 
 | Language | Install | Import | Docs |
 | --- | --- | --- | --- |
-| TypeScript / JavaScript | `npm install t212` | `import { Trading212Client } from "t212"` | [sdks/typescript](sdks/typescript/README.md) |
+| TypeScript / JavaScript | `npm install @zaini/t212-sdk` | `import { Trading212Client } from "@zaini/t212-sdk"` | [sdks/typescript](sdks/typescript/README.md) |
 | Python 3.9+ | `pip install t212-sdk` | `from t212 import Trading212Client` | [sdks/python](sdks/python/README.md) |
 
 Unofficial and not affiliated with Trading 212. The `Live` environment trades real money.
@@ -16,7 +16,7 @@ Create an API key in the Trading 212 app (Settings → API). Keys are tied to on
 environment, so a demo key only works against `Demo`.
 
 ```ts
-import { Trading212Client, Trading212Environment } from "t212";
+import { Trading212Client, Trading212Environment } from "@zaini/t212-sdk";
 
 const client = new Trading212Client({
     environment: Trading212Environment.Demo, // the default

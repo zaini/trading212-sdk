@@ -1,17 +1,17 @@
-# t212
+# @zaini/t212-sdk
 
 Typed TypeScript/JavaScript client for the [Trading 212 Public API](https://docs.trading212.com/api),
 generated from Trading 212's OpenAPI spec. No runtime dependencies; ESM and CommonJS; Node 18+ or any runtime
 with `fetch`. Unofficial and not affiliated with Trading 212.
 
 ```sh
-npm install t212
+npm install @zaini/t212-sdk
 ```
 
 ## Usage
 
 ```ts
-import { Trading212Client, Trading212Environment } from "t212";
+import { Trading212Client, Trading212Environment } from "@zaini/t212-sdk";
 
 const client = new Trading212Client({
     environment: Trading212Environment.Demo, // default; Live trades real money
@@ -50,7 +50,7 @@ Non-2xx responses throw `Trading212Error`, or a subclass such as `Trading212.Una
 `Trading212.TooManyRequestsError`. `statusCode`, `body` and `rawResponse` hold the response details.
 
 ```ts
-import { Trading212 } from "t212";
+import { Trading212 } from "@zaini/t212-sdk";
 
 try {
     await client.positions.list();
