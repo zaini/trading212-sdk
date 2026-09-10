@@ -9,3 +9,6 @@ dist/
 fern-dist/
 fern/.preview/
 .DS_Store
+
+# Fern generation metadata (records the git commit, so it changes every run)
+sdks/**/.fern/
