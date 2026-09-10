@@ -5,8 +5,7 @@ name: Release
 # The tag must match the version in sdks/typescript/package.json and sdks/python/pyproject.toml.
 #
 # Uses trusted publishing (OIDC): npm and PyPI verify this workflow directly, so no
-# long-lived registry tokens are stored. NPM_TOKEN is only needed for the very first
-# npm publish (npm can't configure trusted publishing until the package exists).
+# registry tokens are stored. See docs/maintaining.md.
 on:
   push:
     tags: ["v*"]
@@ -51,9 +50,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm publish --access public
-        env:
-          # Empty once trusted publishing is configured; npm then uses OIDC.
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   pypi:
     needs: check

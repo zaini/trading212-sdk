@@ -81,7 +81,8 @@ running in the `npm` or `pypi` GitHub environment. There are no registry tokens 
 
 - PyPI: configured under the project's *Publishing* settings (owner `zaini`, repo `trading212-sdk`,
   workflow `release.yml`, environment `pypi`).
-- npm: configured under the package's *Settings → Trusted Publisher* (same values, environment `npm`).
+- npm: configured under the package's *Settings → Trusted Publisher* (same values, environment `npm`, with
+  "Allow npm publish" ticked).
 
 The `npm` and `pypi` environments only accept `v*` tags, so nothing else in the repo can publish.
 
