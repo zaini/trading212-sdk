@@ -1,5 +1,5 @@
 [project]
-name = "t212"
+name = "t212-sdk"
 version = "0.1.0"
 description = "Unofficial, fully typed Python SDK for the Trading 212 Public API"
 readme = "README.md"

@@ -5,7 +5,7 @@ Unofficial, generated, fully typed SDKs for the [Trading 212 Public API](https:/
 | Language | Package | Install | Source |
 | --- | --- | --- | --- |
 | TypeScript / JavaScript | [`t212`](https://www.npmjs.com/package/t212) | `npm install t212` | [`sdks/typescript`](sdks/typescript) |
-| Python | [`t212`](https://pypi.org/project/t212/) | `pip install t212` | [`sdks/python`](sdks/python) |
+| Python | [`t212-sdk`](https://pypi.org/project/t212-sdk/) (`import t212`) | `pip install t212-sdk` | [`sdks/python`](sdks/python) |
 
 > Not affiliated with or endorsed by Trading 212. Use at your own risk — the live environment trades real money.
 

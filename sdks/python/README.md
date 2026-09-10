@@ -1,10 +1,10 @@
-# t212 — Trading 212 Python SDK
+# t212-sdk — Trading 212 Python SDK
 
 Unofficial, fully typed Python client for the [Trading 212 Public API](https://docs.trading212.com/api).
 Generated from Trading 212's OpenAPI spec. Not affiliated with Trading 212.
 
 ```sh
-pip install t212
+pip install t212-sdk
 ```
 
 ## Usage
