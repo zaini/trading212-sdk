@@ -18,6 +18,7 @@ import pydantic
 import pytest
 
 from t212 import Trading212Client, Trading212ClientEnvironment
+from t212.errors import ForbiddenError
 from t212.pagination import paginate_pages
 
 pytestmark = pytest.mark.skipif(
@@ -84,12 +85,17 @@ def test_instruments(client):
 
 
 def test_reports(client):
-    assert isinstance(check(client.history.with_raw_response.list_reports), list)
+    try:
+        assert isinstance(check(client.history.with_raw_response.list_reports), list)
+    except ForbiddenError as e:
+        if "not-available-in-demo-account" in str(e.body):
+            pytest.skip("CSV exports are not available on demo accounts")
+        raise
 
 
 def test_pies_deprecated_but_working(client):
     with pytest.warns(DeprecationWarning):
-        assert isinstance(check(client.pies.with_raw_response.list), list)
+        assert isinstance(client.pies.list(), list)
 
 
 @pytest.mark.parametrize("method", ["list_orders", "list_dividends", "list_transactions"])

@@ -43,7 +43,7 @@ For the async client use `apaginate` (`async for order in apaginate(...)`).
 ### Deprecated endpoints
 
 `client.pies.*` still works, but Trading 212 no longer supports or updates the Pies API.
-Calling these methods emits a `DeprecationWarning`.
+Calling these methods emits a `DeprecationWarning` (the `with_raw_response` variants don't).
 
 Read the [API gotchas](https://github.com/zaini/trading212-sdk/blob/main/docs/api-gotchas.md) before trading.
 See [docs/naming-map.md](https://github.com/zaini/trading212-sdk/blob/main/docs/naming-map.md) for every method.

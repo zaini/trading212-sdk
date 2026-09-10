@@ -70,6 +70,9 @@ and other community clients. Items marked *(unverified)* come from a single repo
 
 ## CSV exports
 
+**Not available on demo accounts:** both export endpoints return 403 `/api-errors/not-available-in-demo-account`
+(confirmed by our live tests, Sep 2026).
+
 `history.requestReport()` returns a `reportId`. Poll `history.listReports()` (1 request per minute)
 until that report's status is `Finished`, then download `downloadLink`. Don't send your API credentials to
 that URL. Each export also sends a notification to the account's app.
