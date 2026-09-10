@@ -1,0 +1,114 @@
+# Overrides layered on top of the upstream Trading 212 spec (openapi/api.yaml).
+# The upstream spec is never edited — every change we make lives here.
+# See docs/how-it-works.md for the rationale behind each change.
+
+servers:
+  - url: https://demo.trading212.com
+    x-fern-server-name: Demo
+  - url: https://live.trading212.com
+    x-fern-server-name: Live
+
+paths:
+  /api/v0/equity/account/summary:
+    get:
+      x-fern-sdk-group-name: account
+      x-fern-sdk-method-name: getSummary
+
+  /api/v0/equity/metadata/instruments:
+    get:
+      x-fern-sdk-group-name: instruments
+      x-fern-sdk-method-name: list
+  /api/v0/equity/metadata/exchanges:
+    get:
+      x-fern-sdk-group-name: instruments
+      x-fern-sdk-method-name: listExchanges
+
+  /api/v0/equity/orders:
+    get:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: list
+  /api/v0/equity/orders/{id}:
+    get:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: get
+    delete:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: cancel
+  /api/v0/equity/orders/market:
+    post:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: placeMarket
+  /api/v0/equity/orders/limit:
+    post:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: placeLimit
+  /api/v0/equity/orders/stop:
+    post:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: placeStop
+  /api/v0/equity/orders/stop_limit:
+    post:
+      x-fern-sdk-group-name: orders
+      x-fern-sdk-method-name: placeStopLimit
+
+  /api/v0/equity/positions:
+    get:
+      x-fern-sdk-group-name: positions
+      x-fern-sdk-method-name: list
+
+  /api/v0/equity/history/orders:
+    get:
+      x-fern-sdk-group-name: history
+      x-fern-sdk-method-name: listOrders
+      x-fern-pagination:
+        next_path: $response.nextPagePath
+        results: $response.items
+  /api/v0/equity/history/dividends:
+    get:
+      x-fern-sdk-group-name: history
+      x-fern-sdk-method-name: listDividends
+      x-fern-pagination:
+        next_path: $response.nextPagePath
+        results: $response.items
+  /api/v0/equity/history/transactions:
+    get:
+      x-fern-sdk-group-name: history
+      x-fern-sdk-method-name: listTransactions
+      x-fern-pagination:
+        next_path: $response.nextPagePath
+        results: $response.items
+  /api/v0/equity/history/exports:
+    get:
+      x-fern-sdk-group-name: history
+      x-fern-sdk-method-name: listReports
+    post:
+      x-fern-sdk-group-name: history
+      x-fern-sdk-method-name: requestReport
+
+  /api/v0/equity/pies:
+    get:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: list
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
+    post:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: create
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
+  /api/v0/equity/pies/{id}:
+    get:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: get
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
+    post:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: update
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
+    delete:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: delete
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }
+  /api/v0/equity/pies/{id}/duplicate:
+    post:
+      x-fern-sdk-group-name: pies
+      x-fern-sdk-method-name: duplicate
+      x-fern-availability: { status: deprecated, message: The Pies API is no longer supported or updated by Trading 212. }

@@ -1,0 +1,73 @@
+name: Release
+
+# Publishes both SDKs when a version tag is pushed:
+#   git tag v0.1.0 && git push origin v0.1.0
+# The tag must match the version in sdks/typescript/package.json and sdks/python/pyproject.toml.
+#
+# Uses trusted publishing (OIDC): npm and PyPI verify this workflow directly, so no
+# long-lived registry tokens are stored. NPM_TOKEN is only needed for the very first
+# npm publish (npm can't configure trusted publishing until the package exists).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: version
+        name: Check tag matches package versions
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          ts=$(node -p "require('./sdks/typescript/package.json').version")
+          py=$(python3 -c "import tomllib; print(tomllib.load(open('sdks/python/pyproject.toml','rb'))['project']['version'])")
+          echo "tag=$tag typescript=$ts python=$py"
+          [ "$tag" = "$ts" ] && [ "$tag" = "$py" ] || { echo "::error::Tag v$tag does not match package versions"; exit 1; }
+          echo "version=$tag" >> "$GITHUB_OUTPUT"
+
+  npm:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # trusted publishing + provenance
+    defaults:
+      run:
+        working-directory: sdks/typescript
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest # trusted publishing needs npm >= 11.5.1
+      - run: npm ci
+      - run: npm test
+      - run: npm publish --access public
+        env:
+          # Empty once trusted publishing is configured; npm then uses OIDC.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  pypi:
+    needs: check
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      contents: read
+      id-token: write # trusted publishing
+    defaults:
+      run:
+        working-directory: sdks/python
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv run pytest
+      - run: uv build
+      - run: uv publish --trusted-publishing always

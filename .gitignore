@@ -1,0 +1,11 @@
+node_modules/
+.env
+.env.*
+!.env.example
+__pycache__/
+*.pyc
+.venv/
+dist/
+fern-dist/
+fern/.preview/
+.DS_Store

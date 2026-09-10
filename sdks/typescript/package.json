@@ -1,0 +1,37 @@
+{
+  "name": "t212",
+  "version": "0.1.0",
+  "description": "Unofficial, fully typed TypeScript SDK for the Trading 212 Public API",
+  "keywords": ["trading212", "trading 212", "t212", "trading", "stocks", "sdk", "api"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zaini/trading212-sdk.git",
+    "directory": "sdks/typescript"
+  },
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" },
+      "require": { "types": "./dist/index.d.cts", "default": "./dist/index.cjs" }
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.0",
+    "tsup": "^8.5.0",
+    "typescript": "~5.9.0",
+    "vitest": "^3.2.0"
+  }
+}

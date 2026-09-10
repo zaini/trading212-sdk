@@ -1,0 +1,43 @@
+[project]
+name = "t212"
+version = "0.1.0"
+description = "Unofficial, fully typed Python SDK for the Trading 212 Public API"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.9"
+keywords = ["trading212", "trading 212", "t212", "trading", "stocks", "sdk", "api"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Typing :: Typed",
+]
+dependencies = [
+    "httpx>=0.21.2",
+    "pydantic>=1.9.2",
+    "pydantic-core>=2.18.2",
+    "typing_extensions>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/zaini/trading212-sdk"
+Repository = "https://github.com/zaini/trading212-sdk"
+
+[dependency-groups]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "respx>=0.21", "pyyaml>=6"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/t212"]
+exclude = ["src/t212/tests", "src/t212/*.md", "src/t212/.fern", "src/t212/.fernignore"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/t212", "README.md", "LICENSE"]
+exclude = ["src/t212/tests"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

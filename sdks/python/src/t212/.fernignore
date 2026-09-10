@@ -1,0 +1,3 @@
+# Hand-written files that Fern must not overwrite on regeneration.
+pagination.py
+py.typed

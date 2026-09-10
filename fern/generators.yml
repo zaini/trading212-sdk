@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://schema.buildwithfern.dev/generators-yml.json
+api:
+  specs:
+    - openapi: ../openapi/api.yaml
+      overrides: ./overrides.yml
+  # Upstream lists both schemes in one security requirement (= both required).
+  # Trading 212 accepts either, so the SDK uses key + secret Basic auth only.
+  auth: KeyAndSecret
+
+auth-schemes:
+  KeyAndSecret:
+    scheme: basic
+    username:
+      name: apiKey
+      env: T212_API_KEY
+    password:
+      name: apiSecret
+      env: T212_API_SECRET
+
+groups:
+  typescript:
+    generators:
+      - name: fernapi/fern-typescript-sdk
+        version: 3.92.0
+        output:
+          location: local-file-system
+          path: ../sdks/typescript/src
+        config:
+          namespaceExport: Trading212
+          outputSourceFiles: true
+  python:
+    generators:
+      - name: fernapi/fern-python-sdk
+        version: 5.30.0
+        output:
+          location: local-file-system
+          path: ../sdks/python/src/t212
+        config:
+          client_class_name: Trading212Client
+          package_name: t212

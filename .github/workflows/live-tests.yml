@@ -1,0 +1,44 @@
+name: Live tests (demo account)
+
+# Read-only tests against a real Trading 212 demo account.
+# Credentials live in the "demo" GitHub environment as encrypted secrets.
+# Never runs on pull requests, so forks cannot reach the secrets.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 7 * * 1" # Mondays 07:00 UTC — catches API drift
+
+permissions:
+  contents: read
+
+# Trading 212 rate limits are per account: never run two live jobs at once.
+concurrency:
+  group: live-tests
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    environment: demo
+    env:
+      T212_API_KEY: ${{ secrets.T212_API_KEY }}
+      T212_API_SECRET: ${{ secrets.T212_API_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: sdks/typescript/package-lock.json
+      - name: Python live tests
+        working-directory: sdks/python
+        run: uv run pytest tests/live -v -rs
+      - name: TypeScript live tests
+        working-directory: sdks/typescript
+        run: |
+          npm ci
+          sleep 10
+          npx vitest run tests/live.test.ts
